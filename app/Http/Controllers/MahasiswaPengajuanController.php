@@ -19,6 +19,66 @@ class MahasiswaPengajuanController extends Controller
         return view('mahasiswa.ajukan');
     }
 
+    public function dashboard(Request $request)
+    {
+        $mahasiswa = $this->currentMahasiswa($request);
+        $statusCounts = DB::table('pengajuan_bebas_pustaka')
+            ->where('nim', $mahasiswa->nim)
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status');
+        $latestSubmission = DB::table('pengajuan_bebas_pustaka')
+            ->where('nim', $mahasiswa->nim)
+            ->orderByDesc('tanggal_diajukan')
+            ->first();
+
+        $submissionCount = (int) $statusCounts->sum();
+        $processingCount = (int) $statusCounts->only([
+            'menunggu_review',
+            'diproses',
+            'menunggu_koreksi',
+            'perlu_revisi',
+        ])->sum();
+        $approvedCount = (int) $statusCounts->get('disetujui', 0);
+        $completedCount = (int) $statusCounts->get('selesai', 0);
+        $currentStep = null;
+        $latestStatus = null;
+        $latestStatusNote = null;
+
+        if ($latestSubmission) {
+            $latestSubmission->tanggal_label = Carbon::parse($latestSubmission->tanggal_diajukan)
+                ->locale('id')
+                ->translatedFormat('j F Y');
+            $latestStatus = $this->statusPresentation($latestSubmission->status);
+            $currentStep = match ($latestSubmission->status) {
+                'menunggu_review', 'diproses', 'menunggu_koreksi', 'perlu_revisi', 'ditolak', 'dibatalkan' => 2,
+                'disetujui' => 3,
+                'selesai' => 4,
+                default => 1,
+            };
+            $latestStatusNote = match ($latestSubmission->status) {
+                'menunggu_review', 'diproses' => 'Pengajuan sedang menunggu pemeriksaan petugas.',
+                'menunggu_koreksi', 'perlu_revisi' => $latestSubmission->status_keterangan ?: 'Petugas meminta Anda memperbaiki berkas pengajuan.',
+                'disetujui' => $latestSubmission->status_keterangan ?: 'Pengajuan telah disetujui. Menunggu penyelesaian bebas pustaka.',
+                'selesai' => $latestSubmission->status_keterangan ?: 'Pengajuan bebas pustaka telah selesai.',
+                'ditolak' => $latestSubmission->status_keterangan ?: 'Pengajuan ditolak. Periksa catatan petugas di riwayat.',
+                'dibatalkan' => $latestSubmission->status_keterangan ?: 'Pengajuan ini telah dibatalkan.',
+                default => $latestSubmission->status_keterangan ?: 'Status pengajuan diperbarui.',
+            };
+        }
+
+        return view('mahasiswa.dashboard', compact(
+            'submissionCount',
+            'processingCount',
+            'approvedCount',
+            'completedCount',
+            'latestSubmission',
+            'latestStatus',
+            'latestStatusNote',
+            'currentStep',
+        ));
+    }
+
     public function history(Request $request)
     {
         $mahasiswa = $this->currentMahasiswa($request);

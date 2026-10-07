@@ -205,4 +205,63 @@ class MahasiswaAjukanTest extends TestCase
             ->get(route('mahasiswa.riwayat.document', ['documentId' => $documentId]))
             ->assertNotFound();
     }
+
+    public function test_dashboard_shows_real_submission_counts_for_the_logged_in_student(): void
+    {
+        $createStudent = function (string $nim, string $name): array {
+            $user = User::create([
+                'role' => 'mahasiswa',
+                'password' => Hash::make('secret'),
+            ]);
+            $mahasiswa = Mahasiswa::create([
+                'no' => 1,
+                'nim' => $nim,
+                'nama' => $name,
+                'jk' => 'P',
+                'tanggal_lahir' => '2002-05-05',
+                'prodi' => 'S1 Kedokteran',
+                'angkatan' => 2022,
+                'status' => 'AKTIF',
+                'user_id' => $user->id,
+            ]);
+
+            return compact('user', 'mahasiswa');
+        };
+
+        $insertSubmission = function (array $account, string $number, string $title, string $status, $date): void {
+            DB::table('pengajuan_bebas_pustaka')->insert([
+                'nomor_pengajuan' => $number,
+                'nim' => $account['mahasiswa']->nim,
+                'user_id' => $account['user']->id,
+                'judul_karya' => $title,
+                'jenis_karya' => 'skripsi',
+                'tahun_lulus' => 2026,
+                'abstrak' => 'Abstrak contoh.',
+                'kata_kunci' => 'contoh, dashboard',
+                'dosen_pembimbing_id' => null,
+                'dosen_pembimbing_2_id' => null,
+                'akses_naskah' => 'open',
+                'status' => $status,
+                'tanggal_diajukan' => $date,
+                'created_at' => $date,
+                'updated_at' => $date,
+            ]);
+        };
+
+        $owner = $createStudent('22001101024', 'Mahasiswa Beranda');
+        $other = $createStudent('22001101025', 'Mahasiswa Lain');
+        $insertSubmission($owner, 'BP-2026-PROCESSING', 'Pengajuan Diproses', 'menunggu_review', now()->subDay());
+        $insertSubmission($owner, 'BP-2026-APPROVED', 'Pengajuan Disetujui', 'disetujui', now());
+        $insertSubmission($other, 'BP-2026-PRIVATE', 'Pengajuan Mahasiswa Lain', 'menunggu_review', now());
+
+        $this->actingAs($owner['user'], 'mahasiswa')
+            ->get(route('mahasiswa.dashboard'))
+            ->assertOk()
+            ->assertViewHas('submissionCount', 2)
+            ->assertViewHas('processingCount', 1)
+            ->assertViewHas('approvedCount', 1)
+            ->assertViewHas('completedCount', 0)
+            ->assertSee('Pengajuan Disetujui')
+            ->assertDontSee('Pengajuan Mahasiswa Lain');
+    }
 }

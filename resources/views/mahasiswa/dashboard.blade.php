@@ -36,62 +36,56 @@
                 </p>
             </section>
 
-            <!-- Stepper / Status Tracker Card -->
-            <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-8" data-purpose="stepper-card">
-                <div class="flex flex-col gap-2 border-b border-slate-100 pb-5 mb-6 sm:flex-row sm:items-center sm:justify-between sm:mb-8">
+            <section class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-8" data-purpose="stepper-card">
+                <div class="mb-6 flex flex-col gap-2 border-b border-slate-100 pb-5 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
                     <h3 class="font-academic text-xl font-bold text-[#133a2d]">Status pengajuan terakhir</h3>
-                    <span class="text-xs md:text-sm text-slate-500 font-medium">Dikirim 5 Oktober 2026</span>
+                    @if ($latestSubmission)
+                        <span class="text-xs font-medium text-slate-500 md:text-sm">Dikirim {{ $latestSubmission->tanggal_label }}</span>
+                    @else
+                        <span class="text-xs font-medium text-slate-500 md:text-sm">Belum ada pengajuan</span>
+                    @endif
                 </div>
 
-                <!-- 4 Steps Interactive Stepper Bar -->
-                <div class="relative py-2">
-                    <!-- Stepper Grid -->
-                    <div class="grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0 relative z-10">
-                        <!-- Step 1: Diajukan (Completed) -->
-                        <div class="flex flex-col items-center sm:items-start text-center sm:text-left relative">
-                            <!-- Connecting Line to Step 2 -->
-                            <div class="hidden sm:block absolute top-4 left-5 w-full h-[3px] bg-[#1b4d3e] -z-10"></div>
-                            <div class="w-9 h-9 rounded-full bg-[#1b4d3e] text-white flex items-center justify-center shadow-md shadow-emerald-900/10 mb-3.5">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-                            </div>
-                            <h4 class="text-sm font-bold text-slate-900 leading-snug">Diajukan</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">Berkas sudah terkirim</p>
-                        </div>
-
-                        <!-- Step 2: Diperiksa Petugas (Active) -->
-                        <div class="flex flex-col items-center sm:items-start text-center sm:text-left relative">
-                            <!-- Connecting Line to Step 3 -->
-                            <div class="hidden sm:block absolute top-4 left-5 w-full h-[3px] bg-slate-200 -z-10"></div>
-                            <div class="w-9 h-9 rounded-full border-2 border-[#b57d19] bg-[#fdf8ee] text-[#b57d19] font-bold text-sm flex items-center justify-center shadow-sm mb-3.5">
-                                2
-                            </div>
-                            <h4 class="text-sm font-bold text-slate-900 leading-snug">Diperiksa petugas</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">Sedang diperiksa</p>
-                        </div>
-
-                        <!-- Step 3: Disetujui (Pending) -->
-                        <div class="flex flex-col items-center sm:items-start text-center sm:text-left relative">
-                            <!-- Connecting Line to Step 4 -->
-                            <div class="hidden sm:block absolute top-4 left-5 w-full h-[3px] bg-slate-200 -z-10"></div>
-                            <div class="w-9 h-9 rounded-full border-2 border-slate-300 bg-white text-slate-400 font-semibold text-sm flex items-center justify-center mb-3.5">
-                                3
-                            </div>
-                            <h4 class="text-sm font-semibold text-slate-800 leading-snug">Disetujui</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Berkas dinyatakan lengkap</p>
-                        </div>
-
-                        <!-- Step 4: Surat Siap (Pending) -->
-                        <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
-                            <div class="w-9 h-9 rounded-full border-2 border-slate-300 bg-white text-slate-400 font-semibold text-sm flex items-center justify-center mb-3.5">
-                                4
-                            </div>
-                            <h4 class="text-sm font-semibold text-slate-800 leading-snug">Surat siap</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Surat dapat diunduh</p>
+                @if ($latestSubmission)
+                    <div class="relative py-2">
+                        <div class="relative z-10 grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0">
+                            @foreach ([['Diajukan', 'Berkas sudah terkirim'], ['Diperiksa petugas', 'Menunggu pemeriksaan'], ['Disetujui', 'Berkas dinyatakan lengkap'], ['Selesai', 'Proses bebas pustaka selesai']] as $index => [$stepTitle, $stepDescription])
+                                @php
+                                    $stepNumber = $index + 1;
+                                    $isComplete = $stepNumber < $currentStep || $currentStep === 4;
+                                    $isCurrent = $stepNumber === $currentStep && $currentStep < 4;
+                                @endphp
+                                <div class="relative flex flex-col items-center text-center sm:items-start sm:text-left">
+                                    @if ($stepNumber < 4)
+                                        <div class="absolute left-5 top-4 -z-10 hidden h-[3px] w-full sm:block {{ $stepNumber < $currentStep ? 'bg-[#1b4d3e]' : 'bg-slate-200' }}"></div>
+                                    @endif
+                                    <div class="mb-3.5 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold {{ $isComplete ? 'bg-[#1b4d3e] text-white shadow-md shadow-emerald-900/10' : ($isCurrent ? 'border-2 border-[#b57d19] bg-[#fdf8ee] text-[#b57d19] shadow-sm' : 'border-2 border-slate-300 bg-white text-slate-400') }}">
+                                        @if ($isComplete)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                        @else
+                                            {{ $stepNumber }}
+                                        @endif
+                                    </div>
+                                    <h4 class="text-sm leading-snug {{ $isCurrent || $isComplete ? 'font-bold text-slate-900' : 'font-semibold text-slate-700' }}">{{ $stepTitle }}</h4>
+                                    <p class="mt-0.5 text-xs {{ $isCurrent ? 'text-amber-800' : 'text-slate-500' }}">
+                                        @if ($stepNumber === 1)
+                                            {{ $latestSubmission->tanggal_label }}
+                                        @elseif ($isCurrent)
+                                            {{ $latestStatus['label'] }}
+                                        @else
+                                            {{ $stepDescription }}
+                                        @endif
+                                    </p>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
-                </div>
+                @else
+                    <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-sm leading-relaxed text-slate-600">Anda belum memiliki pengajuan bebas pustaka.</p>
+                        <a class="inline-flex items-center justify-center rounded-lg bg-[#1b4d3e] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#143e31]" href="{{ route('mahasiswa.ajukan') }}">Buat pengajuan</a>
+                    </div>
+                @endif
             </section>
 
             <!-- Bottom Split Columns Cards -->
@@ -99,16 +93,21 @@
                 <!-- Card Left: Status & Action -->
                 <article class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-8 flex flex-col justify-between" data-purpose="status-detail-card">
                     <div>
-                        <h3 class="font-academic text-xl font-bold text-[#133a2d] mb-3">
-                            Pengajuan sedang diperiksa
-                        </h3>
-                        <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                            Tidak ada yang perlu Anda lakukan sekarang. Status akan berubah di halaman ini dan Anda mendapat notifikasi.
-                        </p>
+                        @if ($latestSubmission)
+                            <div class="mb-4 flex flex-wrap items-center gap-3">
+                                <h3 class="font-academic text-xl font-bold text-[#133a2d]">{{ $latestStatus['label'] }}</h3>
+                                <span class="rounded-full border px-3 py-1 text-xs font-semibold {{ $latestStatus['badge'] }}">{{ $latestSubmission->nomor_pengajuan }}</span>
+                            </div>
+                            <p class="mb-3 text-base font-semibold leading-relaxed text-slate-800">{{ $latestSubmission->judul_karya }}</p>
+                            <p class="mb-6 text-sm leading-relaxed text-slate-600">{{ $latestStatusNote }}</p>
+                        @else
+                            <h3 class="mb-3 font-academic text-xl font-bold text-[#133a2d]">Belum ada pengajuan</h3>
+                            <p class="mb-6 text-sm leading-relaxed text-slate-600">Status proses bebas pustaka akan ditampilkan di sini setelah Anda mengirim pengajuan.</p>
+                        @endif
                     </div>
                     <div>
-                        <a class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-[#1b4d3e] text-white hover:bg-[#143e31] font-semibold text-sm shadow hover:shadow-md transition-all active:scale-[0.98]" href="#">
-                            Lihat riwayat
+                        <a class="inline-flex items-center justify-center rounded-lg bg-[#1b4d3e] px-6 py-2.5 text-sm font-semibold text-white shadow transition-all hover:bg-[#143e31] hover:shadow-md active:scale-[0.98]" href="{{ $latestSubmission ? route('mahasiswa.riwayat') : route('mahasiswa.ajukan') }}">
+                            {{ $latestSubmission ? 'Lihat riwayat' : 'Ajukan bebas pustaka' }}
                         </a>
                     </div>
                 </article>
@@ -118,35 +117,30 @@
                     <div>
                         <!-- Header with Badge -->
                         <div class="flex items-center justify-between mb-6 pb-2">
-                            <h3 class="font-academic text-xl font-bold text-[#133a2d]">
-                                Tanggungan pustaka
-                            </h3>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e8f6ed] text-[#1b4d3e] border border-emerald-200/80">
-                                <span class="w-1.5 h-1.5 rounded-full bg-[#1b4d3e] mr-1.5"></span>
-                                Bebas
-                            </span>
+                            <h3 class="font-academic text-xl font-bold text-[#133a2d]">Ringkasan pengajuan</h3>
+                            <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">{{ $submissionCount }} total</span>
                         </div>
 
                         <!-- Clearance Rows -->
                         <div class="space-y-4">
-                            <!-- Item 1 -->
                             <div class="flex items-center justify-between text-sm py-1 border-b border-slate-100">
-                                <span class="text-slate-600">Buku belum kembali</span>
-                                <span class="font-semibold text-slate-900 font-mono text-base">0</span>
+                                <span class="text-slate-600">Sedang diproses</span>
+                                <span class="font-mono text-base font-semibold text-slate-900">{{ $processingCount }}</span>
                             </div>
-                            <!-- Item 2 -->
-                            <div class="flex items-center justify-between text-sm py-1">
-                                <span class="text-slate-600">Denda</span>
-                                <span class="font-semibold text-slate-900 font-mono text-base">Rp0</span>
+                            <div class="flex items-center justify-between border-b border-slate-100 py-1 text-sm">
+                                <span class="text-slate-600">Disetujui</span>
+                                <span class="font-mono text-base font-semibold text-slate-900">{{ $approvedCount }}</span>
+                            </div>
+                            <div class="flex items-center justify-between py-1 text-sm">
+                                <span class="text-slate-600">Selesai</span>
+                                <span class="font-mono text-base font-semibold text-slate-900">{{ $completedCount }}</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Bottom Micro Note -->
                     <div class="mt-6 pt-4 border-t border-slate-100">
-                        <p class="text-xs text-slate-400 italic">
-                            Status diperbarui otomatis tersinkronisasi dengan SIPERPU UNISMA.
-                        </p>
+                        <p class="text-xs italic text-slate-400">Angka dihitung dari pengajuan Anda yang tersimpan.</p>
                     </div>
                 </article>
             </div>

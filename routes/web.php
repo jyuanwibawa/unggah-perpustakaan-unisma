@@ -20,17 +20,15 @@ Route::get('/staff/login', function () {
     return view('auth.staff-login');
 });
 
-Route::get('/beranda', function () {
-    return view('mahasiswa.dashboard');
-})->middleware(AuthenticateMahasiswa::class);
+Route::get('/beranda', [MahasiswaPengajuanController::class, 'dashboard'])
+    ->middleware(AuthenticateMahasiswa::class);
 
-Route::get('/dashboard', function () {
-    return view('mahasiswa.dashboard');
-})->middleware(AuthenticateMahasiswa::class);
+Route::get('/dashboard', [MahasiswaPengajuanController::class, 'dashboard'])
+    ->middleware(AuthenticateMahasiswa::class);
 
-Route::get('/mahasiswa/dashboard', function () {
-    return view('mahasiswa.dashboard');
-})->middleware(AuthenticateMahasiswa::class)->name('mahasiswa.dashboard');
+Route::get('/mahasiswa/dashboard', [MahasiswaPengajuanController::class, 'dashboard'])
+    ->middleware(AuthenticateMahasiswa::class)
+    ->name('mahasiswa.dashboard');
 
 Route::get('/mahasiswa/ajukan', [MahasiswaPengajuanController::class, 'create'])
     ->middleware(AuthenticateMahasiswa::class)
