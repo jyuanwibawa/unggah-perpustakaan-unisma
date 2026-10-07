@@ -21,7 +21,7 @@
 <body class="bg-surface-container-lowest font-body-md text-on-surface antialiased h-full">
     <main class="w-full min-h-screen h-full bg-surface-container-lowest flex flex-col lg:flex-row overflow-x-hidden">
         <!-- Section Kiri: Branding & Informasi Pustakawan -->
-        <div class="w-full lg:w-[48%] xl:w-[45%] relative flex flex-col justify-between p-8 sm:p-12 lg:p-16 text-on-primary min-h-[520px] lg:min-h-screen bg-primary overflow-hidden shadow-2xl z-10">
+        <div class="w-full lg:w-[48%] xl:w-[45%] relative flex flex-col justify-between p-5 sm:p-8 lg:p-16 text-on-primary min-h-[340px] sm:min-h-[400px] lg:min-h-screen bg-primary overflow-hidden shadow-2xl z-10">
             <div class="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-1000 ease-out" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAVlK7F7KTBrU4NfEAoxe5EjsoFCbCLG1QEnZkeywNRlk8qXBtospIr5fLs3PXTii1Klmh3aLQ-JUWE8AoH4ebX5LKaVLfIdShd5tJLFiCDtsDFDYTpIMiLP8MGZKz6OKl3QTxUIdXPSXnCOKn_nrg1xh59GkFtljp31_gITDjxye4XFDcbHrEPd5xdkFv8k-zlI-ZUzVeV8QYv8dEQx0kHLX5wgFQyT557G4jzzFNfUC4zT_XiniIyw6YI1ORIVwEIa14');"></div>
             <div class="absolute inset-0 bg-gradient-to-tr from-[#00261d]/95 via-[#1b4d3e]/88 to-[#0a3124]/80 backdrop-blur-[0.5px]"></div>
             
@@ -37,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="relative z-10 my-auto py-12 max-w-md">
+            <div class="relative z-10 my-auto py-8 sm:py-12 max-w-md">
                 <h1 class="font-headline-lg text-3xl sm:text-4xl leading-tight text-white font-normal mb-3">Portal Layanan Staf &amp; Sirkulasi</h1>
                 <p class="font-body-md text-sm sm:text-base text-primary-fixed-dim/90 leading-relaxed font-normal">Sistem pengelolaan sirkulasi, inventarisasi koleksi, dan administrasi pustaka terpadu.</p>
             </div>
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Section Kanan: Form Login Pustakawan -->
-        <div class="w-full lg:w-[52%] xl:w-[55%] flex flex-col justify-between p-8 sm:p-12 lg:p-16 xl:p-20 bg-surface-container-lowest min-h-screen overflow-y-auto">
+        <div class="w-full lg:w-[52%] xl:w-[55%] flex flex-col justify-between p-6 sm:p-12 lg:p-16 xl:p-20 bg-surface-container-lowest min-h-[calc(100vh-340px)] sm:min-h-[calc(100vh-400px)] lg:min-h-screen overflow-y-auto">
             <div class="w-full max-w-lg mx-auto my-auto py-4">
                 <div class="mb-8 text-center sm:text-left">
                     <h2 class="font-headline-lg text-3xl sm:text-4xl font-bold text-on-surface tracking-tight mb-2">Login Pustakawan</h2>

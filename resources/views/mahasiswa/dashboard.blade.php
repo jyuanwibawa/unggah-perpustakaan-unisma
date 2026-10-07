@@ -25,7 +25,7 @@
         <x-mahasiswa.header title="Beranda" />
 
         <!-- BEGIN: Dashboard Workspace -->
-        <main class="p-10 max-w-7xl w-full mx-auto space-y-7">
+        <main class="p-5 sm:p-8 lg:p-10 max-w-7xl w-full mx-auto space-y-6 sm:space-y-7">
             <!-- Page Title & Information -->
             <section class="space-y-2" data-purpose="page-title-banner">
                 <h2 class="font-academic text-3xl md:text-4xl font-bold tracking-tight text-[#133a2d]">
@@ -37,8 +37,8 @@
             </section>
 
             <!-- Stepper / Status Tracker Card -->
-            <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-8" data-purpose="stepper-card">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-5 mb-8">
+            <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-8" data-purpose="stepper-card">
+                <div class="flex flex-col gap-2 border-b border-slate-100 pb-5 mb-6 sm:flex-row sm:items-center sm:justify-between sm:mb-8">
                     <h3 class="font-academic text-xl font-bold text-[#133a2d]">Status pengajuan terakhir</h3>
                     <span class="text-xs md:text-sm text-slate-500 font-medium">Dikirim 5 Oktober 2026</span>
                 </div>
@@ -46,7 +46,7 @@
                 <!-- 4 Steps Interactive Stepper Bar -->
                 <div class="relative py-2">
                     <!-- Stepper Grid -->
-                    <div class="grid grid-cols-4 relative z-10">
+                    <div class="grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0 relative z-10">
                         <!-- Step 1: Diajukan (Completed) -->
                         <div class="flex flex-col items-center sm:items-start text-center sm:text-left relative">
                             <!-- Connecting Line to Step 2 -->
@@ -95,9 +95,9 @@
             </section>
 
             <!-- Bottom Split Columns Cards -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <!-- Card Left: Status & Action -->
-                <article class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-8 flex flex-col justify-between" data-purpose="status-detail-card">
+                <article class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-8 flex flex-col justify-between" data-purpose="status-detail-card">
                     <div>
                         <h3 class="font-academic text-xl font-bold text-[#133a2d] mb-3">
                             Pengajuan sedang diperiksa
@@ -114,7 +114,7 @@
                 </article>
 
                 <!-- Card Right: Tanggungan Pustaka (Clearance Summary) -->
-                <article class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-8 flex flex-col justify-between" data-purpose="clearance-summary-card">
+                <article class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-8 flex flex-col justify-between" data-purpose="clearance-summary-card">
                     <div>
                         <!-- Header with Badge -->
                         <div class="flex items-center justify-between mb-6 pb-2">

@@ -2,11 +2,15 @@
 
 namespace Database\Seeders;
 
+use App\Models\Mahasiswa;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class MahasiswaSeeder extends Seeder
 {
+    private const DEFAULT_PASSWORD = 'unismajayadanberjaya';
+
     /**
      * Run the database seeds.
      */
@@ -402,7 +406,19 @@ class MahasiswaSeeder extends Seeder
         ];
 
         foreach (array_chunk($data, 50) as $chunk) {
-            DB::table('mahasiswa')->insertOrIgnore($chunk);
+            foreach ($chunk as $record) {
+                $mahasiswa = Mahasiswa::where('nim', $record['nim'])->first();
+                $user = $mahasiswa?->user ?? User::create([
+                    'role' => 'mahasiswa',
+                    'password' => Hash::make(self::DEFAULT_PASSWORD),
+                ]);
+
+                $user->role = 'mahasiswa';
+                $user->password = Hash::make(self::DEFAULT_PASSWORD);
+                $user->save();
+
+                $mahasiswa?->update(['user_id' => $user->id]);
+            }
         }
     }
 }

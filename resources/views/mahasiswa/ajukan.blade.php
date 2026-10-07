@@ -37,8 +37,8 @@
                 <p class="max-w-3xl text-sm leading-relaxed text-stone-600 sm:text-base">Lengkapi data karya ilmiah dan siapkan tiga berkas PDF untuk pengajuan bebas pustaka.</p>
             </div>
 
-            <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-                <section class="rounded-xl border border-stone-200/90 bg-white p-5 shadow-sm sm:p-7 lg:col-span-8" data-purpose="form-submission-card">
+            <div class="grid grid-cols-1 items-start gap-8 xl:grid-cols-12">
+                <section class="rounded-xl border border-stone-200/90 bg-white p-5 shadow-sm sm:p-7 xl:col-span-8" data-purpose="form-submission-card">
                     <form id="bebas-pustaka-form" novalidate>
                         <div class="mb-6">
                             <h2 class="font-academic text-2xl font-bold text-stone-900">Form pengajuan</h2>
@@ -125,7 +125,7 @@
                     </form>
                 </section>
 
-                <aside class="space-y-6 lg:sticky lg:top-24 lg:col-span-4" data-purpose="status-and-guidance-widgets">
+                <aside class="space-y-6 xl:sticky xl:top-24 xl:col-span-4" data-purpose="status-and-guidance-widgets">
                     <div class="rounded-xl border border-stone-200/90 bg-white p-6 shadow-sm">
                         <h3 class="mb-4 border-b border-stone-100 pb-2 font-academic text-lg font-bold text-stone-900">Kelengkapan berkas</h3>
                         <ul class="space-y-3.5 text-sm text-stone-700">

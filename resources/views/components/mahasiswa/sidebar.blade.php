@@ -3,9 +3,17 @@
 @php
     $activeClasses = 'bg-white text-[#1b4d3e] font-semibold shadow-sm';
     $inactiveClasses = 'text-emerald-100 hover:text-white hover:bg-white/10 font-medium';
+    $student = auth('mahasiswa')->user()?->mahasiswa;
 @endphp
 
-<aside class="w-72 h-screen sticky top-0 bg-[#1b4d3e] text-white flex flex-col justify-between shrink-0 shadow-xl border-r border-[#153f33]" data-purpose="main-sidebar">
+<style>
+    @media (max-width: 1279px) {
+        [data-purpose="main-sidebar"] { transform: translateX(-100%); transition: transform 180ms ease; }
+        [data-purpose="main-sidebar"].is-open { transform: translateX(0); }
+    }
+</style>
+<div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-slate-950/40 lg:hidden" aria-hidden="true"></div>
+<aside id="student-sidebar" class="fixed inset-y-0 left-0 z-40 flex h-screen w-72 flex-col justify-between overflow-y-auto border-r border-[#153f33] bg-[#1b4d3e] text-white shadow-xl xl:sticky xl:top-0 xl:z-auto" data-purpose="main-sidebar">
     <div class="p-6">
         <div class="flex items-center space-x-3.5 pb-8 pt-2">
             <div class="w-12 h-12 flex items-center justify-center shrink-0">
@@ -42,10 +50,12 @@
 
     <div class="p-5 mb-2 border-t border-emerald-900/50 bg-[#164134]/40">
         <div class="flex items-center space-x-3 mb-4">
-            <div class="w-10 h-10 rounded-full bg-white text-[#1b4d3e] flex items-center justify-center font-bold text-base shadow-sm ring-2 ring-emerald-300/30">N</div>
+            <div class="w-10 h-10 rounded-full bg-white text-[#1b4d3e] flex items-center justify-center font-bold text-base shadow-sm ring-2 ring-emerald-300/30">
+                {{ strtoupper(substr($student?->nama ?? 'N', 0, 1)) }}
+            </div>
             <div class="truncate">
-                <p class="text-sm font-semibold text-white truncate">Nama Mahasiswa</p>
-                <p class="text-xs text-emerald-200/70 font-mono tracking-tight">NIM 00000000000</p>
+                <p class="text-sm font-semibold text-white truncate">{{ $student?->nama ?? 'Nama Mahasiswa' }}</p>
+                <p class="text-xs text-emerald-200/70 font-mono tracking-tight">NIM {{ $student?->nim ?? '00000000000' }}</p>
             </div>
         </div>
         <a href="{{ url('/login') }}" class="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl border border-white/25 hover:border-white/50 text-emerald-100 hover:text-white hover:bg-white/10 text-xs font-semibold tracking-wide transition-all" data-purpose="logout-button">
