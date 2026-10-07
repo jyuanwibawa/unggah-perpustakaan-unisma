@@ -63,5 +63,14 @@ Route::get('/mahasiswa/riwayat/dokumen/{documentId}', [MahasiswaPengajuanControl
     ->name('mahasiswa.riwayat.document');
 
 Route::get('/mahasiswa/panduan', function () {
-    return view('mahasiswa.panduan');
+    $alurPengajuan = DB::table('alur_pengajuan')
+        ->where('is_active', true)
+        ->orderBy('urutan')
+        ->get();
+    $pertanyaanUmum = DB::table('pertanyaan_umum')
+        ->where('is_active', true)
+        ->orderBy('urutan')
+        ->get();
+
+    return view('mahasiswa.panduan', compact('alurPengajuan', 'pertanyaanUmum'));
 });

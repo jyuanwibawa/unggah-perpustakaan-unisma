@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Mahasiswa;
 use App\Models\User;
+use Database\Seeders\PertanyaanUmumSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -263,5 +264,39 @@ class MahasiswaAjukanTest extends TestCase
             ->assertViewHas('completedCount', 0)
             ->assertSee('Pengajuan Disetujui')
             ->assertDontSee('Pengajuan Mahasiswa Lain');
+    }
+
+    public function test_workflow_master_is_seeded_with_guidance_stages(): void
+    {
+        $this->assertDatabaseCount('alur_pengajuan', 6);
+        $this->assertDatabaseHas('alur_pengajuan', [
+            'kode_status' => 'menunggu_review',
+            'nama_tahap' => 'Diperiksa petugas',
+            'urutan' => 1,
+            'is_active' => true,
+        ]);
+        $this->assertDatabaseHas('alur_pengajuan', [
+            'kode_status' => 'selesai',
+            'nama_tahap' => 'Surat siap',
+            'urutan' => 4,
+            'is_final' => true,
+        ]);
+    }
+
+    public function test_guide_displays_active_faq_records_from_the_database(): void
+    {
+        $this->seed(PertanyaanUmumSeeder::class);
+        $this->seed(PertanyaanUmumSeeder::class);
+        DB::table('pertanyaan_umum')
+            ->where('slug', 'pengajuan-perlu-revisi')
+            ->update(['is_active' => false]);
+
+        $this->get('/mahasiswa/panduan')
+            ->assertOk()
+            ->assertSee('Berkas apa saja yang harus diunggah?')
+            ->assertDontSee('Pengajuan saya perlu revisi. Apa yang harus dilakukan?')
+            ->assertSee('Open Access membuat naskah dapat dibaca publik.');
+
+        $this->assertDatabaseCount('pertanyaan_umum', 5);
     }
 }
