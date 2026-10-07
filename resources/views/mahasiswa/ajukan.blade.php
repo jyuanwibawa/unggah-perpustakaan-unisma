@@ -25,66 +25,100 @@
         .font-academic { font-family: 'Playfair Display', Georgia, serif; }
     </style>
 </head>
-<body class="text-slate-800 antialiased h-screen overflow-hidden flex bg-[#f6f8f7]">
+<body class="text-slate-800 antialiased min-h-screen overflow-x-hidden flex bg-[#f6f8f7]">
     <x-mahasiswa.sidebar active="ajukan" />
 
-    <div class="flex-1 h-screen flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 min-h-screen flex flex-col min-w-0">
         <x-mahasiswa.header title="Ajukan bebas pustaka" />
 
-        <main class="mx-auto w-full max-w-7xl p-5 sm:p-8 lg:p-10">
+        <main class="mx-auto w-full max-w-screen-2xl p-6 sm:p-10 lg:p-12">
             <div class="mb-8">
-                <h1 class="mb-2 font-academic text-3xl font-bold text-stone-900 sm:text-4xl">Ajukan bebas pustaka</h1>
-                <p class="max-w-3xl text-sm leading-relaxed text-stone-600 sm:text-base">Lengkapi data karya ilmiah dan siapkan tiga berkas PDF untuk pengajuan bebas pustaka.</p>
+                <h1 class="mb-3 font-academic text-4xl font-bold text-stone-900 sm:text-5xl">Ajukan bebas pustaka</h1>
+                <p class="max-w-4xl text-base leading-relaxed text-stone-600 sm:text-lg">Lengkapi data karya ilmiah dan siapkan tiga berkas PDF untuk pengajuan bebas pustaka.</p>
             </div>
 
             <div class="grid grid-cols-1 items-start gap-8 xl:grid-cols-12">
-                <section class="rounded-xl border border-stone-200/90 bg-white p-5 shadow-sm sm:p-7 xl:col-span-8" data-purpose="form-submission-card">
-                    <form id="bebas-pustaka-form" novalidate>
+                <section class="rounded-xl border border-stone-200/90 bg-white p-6 shadow-sm sm:p-9 xl:col-span-9" data-purpose="form-submission-card">
+                    <form id="bebas-pustaka-form" method="POST" action="{{ route('mahasiswa.ajukan.store') }}" enctype="multipart/form-data" novalidate>
+                        @csrf
                         <div class="mb-6">
-                            <h2 class="font-academic text-2xl font-bold text-stone-900">Form pengajuan</h2>
+                            <h2 class="font-academic text-3xl font-bold text-stone-900">Form pengajuan</h2>
                             <p class="mt-1 text-xs text-stone-500 sm:text-sm">Semua isian bertanda <span class="font-semibold text-red-600">*</span> wajib diisi.</p>
                         </div>
+                        @if ($errors->any())
+                            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800" role="alert">
+                                <p class="font-semibold">Periksa kembali isian pengajuan:</p>
+                                <ul class="mt-2 list-inside list-disc space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        @if (session('success'))
+                            <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-900" role="status">
+                                {{ session('success') }}
+                            </div>
+                        @endif
                         <div class="space-y-6">
-                            <div class="border-b border-stone-100 pb-3"><h3 class="font-academic text-lg font-bold text-stone-800">Data karya ilmiah</h3></div>
+                            <div class="border-b border-stone-100 pb-3"><h3 class="font-academic text-xl font-bold text-stone-800">Data karya ilmiah</h3></div>
                             <div>
-                                <label for="judul_karya" class="mb-2 block text-sm font-semibold text-stone-700">Judul karya ilmiah <span class="text-red-600">*</span></label>
-                                <input id="judul_karya" name="judul_karya" type="text" required placeholder="Masukkan judul karya ilmiah lengkap" class="w-full rounded-lg border-stone-300 px-3.5 py-2.5 text-sm text-stone-800 shadow-sm transition placeholder:text-stone-400 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
+                                <label for="judul_karya" class="mb-2 block text-base font-semibold text-stone-700">Judul karya ilmiah <span class="text-red-600">*</span></label>
+                                <input id="judul_karya" name="judul_karya" type="text" value="{{ old('judul_karya') }}" required placeholder="Masukkan judul karya ilmiah lengkap" class="w-full rounded-lg border-stone-300 px-4 py-3 text-base text-stone-800 shadow-sm transition placeholder:text-stone-400 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
                             </div>
                             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                                 <div>
-                                    <label for="jenis_karya" class="mb-2 block text-sm font-semibold text-stone-700">Jenis karya <span class="text-red-600">*</span></label>
-                                    <select id="jenis_karya" name="jenis_karya" required class="w-full rounded-lg border-stone-300 px-3.5 py-2.5 text-sm text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
-                                        <option value="" disabled selected>Pilih jenis karya</option>
-                                        <option value="skripsi">Skripsi</option><option value="tesis">Tesis</option><option value="disertasi">Disertasi</option><option value="tugas_akhir">Tugas Akhir</option>
+                                    <label for="jenis_karya" class="mb-2 block text-base font-semibold text-stone-700">Jenis karya <span class="text-red-600">*</span></label>
+                                    <select id="jenis_karya" name="jenis_karya" required class="w-full rounded-lg border-stone-300 px-4 py-3 text-base text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
+                                        <option value="" disabled @selected(! old('jenis_karya'))>Pilih jenis karya</option>
+                                        <option value="skripsi" @selected(old('jenis_karya') === 'skripsi')>Skripsi</option><option value="tesis" @selected(old('jenis_karya') === 'tesis')>Tesis</option><option value="disertasi" @selected(old('jenis_karya') === 'disertasi')>Disertasi</option><option value="tugas_akhir" @selected(old('jenis_karya') === 'tugas_akhir')>Tugas Akhir</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label for="tahun_lulus" class="mb-2 block text-sm font-semibold text-stone-700">Tahun lulus <span class="text-red-600">*</span></label>
-                                    <input id="tahun_lulus" name="tahun_lulus" type="number" min="1990" max="2035" value="2026" required class="w-full rounded-lg border-stone-300 px-3.5 py-2.5 text-sm text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
+                                    <label for="tahun_lulus" class="mb-2 block text-base font-semibold text-stone-700">Tahun lulus <span class="text-red-600">*</span></label>
+                                    <input id="tahun_lulus" name="tahun_lulus" type="number" min="1990" max="2035" value="{{ old('tahun_lulus', 2026) }}" required class="w-full rounded-lg border-stone-300 px-4 py-3 text-base text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
                                 </div>
                             </div>
                             <div>
-                                <label for="abstrak" class="mb-2 block text-sm font-semibold text-stone-700">Abstrak (bahasa Indonesia) <span class="text-red-600">*</span></label>
-                                <textarea id="abstrak" name="abstrak" maxlength="2000" rows="6" required placeholder="Tuliskan intisari atau abstrak karya ilmiah..." class="w-full resize-y rounded-lg border-stone-300 p-3.5 text-sm leading-relaxed text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20"></textarea>
+                                <label for="abstrak" class="mb-2 block text-base font-semibold text-stone-700">Abstrak (bahasa Indonesia) <span class="text-red-600">*</span></label>
+                                <textarea id="abstrak" name="abstrak" maxlength="2000" rows="6" required placeholder="Tuliskan intisari atau abstrak karya ilmiah..." class="w-full resize-y rounded-lg border-stone-300 p-4 text-base leading-relaxed text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">{{ old('abstrak') }}</textarea>
                                 <div class="mt-1.5 text-right text-xs font-medium text-stone-400"><span id="char-counter">0</span> / 2000 karakter</div>
                             </div>
-                            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                            <div class="space-y-5">
                                 <div>
-                                    <label for="kata_kunci" class="mb-2 block text-sm font-semibold text-stone-700">Kata kunci <span class="text-red-600">*</span></label>
-                                    <input id="kata_kunci" name="kata_kunci" type="text" required class="w-full rounded-lg border-stone-300 px-3.5 py-2.5 text-sm text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
-                                    <p class="mt-1.5 text-xs leading-normal text-stone-500">Pisahkan dengan koma, misalnya: sistem informasi, REST API.</p>
+                                    <label for="kata-kunci-input" class="mb-2 block text-base font-semibold text-stone-700">Kata kunci <span class="text-red-600">*</span></label>
+                                    <div class="flex min-h-14 flex-wrap items-center gap-2 rounded-lg border border-stone-300 bg-white px-3 py-2 shadow-sm focus-within:border-[#1B4D3E] focus-within:ring-2 focus-within:ring-[#1B4D3E]/20">
+                                        <div id="kata-kunci-chips" class="contents" aria-live="polite"></div>
+                                        <input id="kata-kunci-input" type="text" autocomplete="off" placeholder="Ketik kata kunci lalu tekan Enter" class="min-w-[12rem] flex-1 border-0 bg-transparent px-1 py-2 text-base text-stone-800 placeholder:text-stone-400 focus:ring-0">
+                                    </div>
+                                    <input id="kata_kunci" name="kata_kunci" type="hidden">
+                                    <p class="mt-1.5 text-xs leading-normal text-stone-500">Tekan Enter atau koma untuk menambahkan kata kunci; klik silang untuk menghapus.</p>
                                 </div>
-                                <div>
-                                    <label for="dosen_pembimbing" class="mb-2 block text-sm font-semibold text-stone-700">Dosen pembimbing 1 <span class="text-red-600">*</span></label>
-                                    <input id="dosen_pembimbing" name="dosen_pembimbing" type="text" required class="w-full rounded-lg border-stone-300 px-3.5 py-2.5 text-sm text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
-                                    <p class="mt-1.5 text-xs leading-normal text-stone-500">Tulis nama lengkap beserta gelar.</p>
+                                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                                    <div>
+                                        <label for="dosen_pembimbing" class="mb-2 block text-base font-semibold text-stone-700">Dosen pembimbing 1 <span class="text-red-600">*</span></label>
+                                        <div class="relative">
+                                            <input id="dosen_pembimbing" name="dosen_pembimbing_label" type="text" value="{{ old('dosen_pembimbing_label') }}" required autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="dosen-suggestions-1" aria-expanded="false" placeholder="Ketik nama atau inisial dosen" class="w-full rounded-lg border-stone-300 px-4 py-3 text-base text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
+                                            <input id="dosen_pembimbing_id" name="dosen_pembimbing_id" type="hidden" value="{{ old('dosen_pembimbing_id') }}">
+                                            <div id="dosen-suggestions-1" class="absolute z-30 mt-1 hidden max-h-64 w-full overflow-y-auto rounded-lg border border-stone-200 bg-white py-1 shadow-lg" role="listbox"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="dosen_pembimbing_2" class="mb-2 block text-base font-semibold text-stone-700">Dosen pembimbing 2 <span class="text-red-600">*</span></label>
+                                        <div class="relative">
+                                            <input id="dosen_pembimbing_2" name="dosen_pembimbing_2_label" type="text" value="{{ old('dosen_pembimbing_2_label') }}" required autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="dosen-suggestions-2" aria-expanded="false" placeholder="Ketik nama atau inisial dosen" class="w-full rounded-lg border-stone-300 px-4 py-3 text-base text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
+                                            <input id="dosen_pembimbing_2_id" name="dosen_pembimbing_2_id" type="hidden" value="{{ old('dosen_pembimbing_2_id') }}">
+                                            <div id="dosen-suggestions-2" class="absolute z-30 mt-1 hidden max-h-64 w-full overflow-y-auto rounded-lg border border-stone-200 bg-white py-1 shadow-lg" role="listbox"></div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <p class="text-xs leading-normal text-stone-500">Pilih nama dari daftar sugesti agar kedua pembimbing terhubung dengan data dosen.</p>
                             </div>
                             <div>
-                                <label for="akses_naskah" class="mb-2 block text-sm font-semibold text-stone-700">Akses naskah di repositori <span class="text-red-600">*</span></label>
-                                <select id="akses_naskah" name="akses_naskah" required class="w-full rounded-lg border-stone-300 px-3.5 py-2.5 text-sm text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
-                                    <option value="" disabled selected>Pilih jenis akses</option>
-                                    <option value="open">Open Access (Publik)</option><option value="restricted">Restricted (Hanya Civitas Akademika)</option><option value="embargo">Embargo (Ditunda)</option>
+                                <label for="akses_naskah" class="mb-2 block text-base font-semibold text-stone-700">Akses naskah di repositori <span class="text-red-600">*</span></label>
+                                <select id="akses_naskah" name="akses_naskah" required class="w-full rounded-lg border-stone-300 px-4 py-3 text-base text-stone-800 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]/20">
+                                    <option value="" disabled @selected(! old('akses_naskah'))>Pilih jenis akses</option>
+                                    <option value="open" @selected(old('akses_naskah') === 'open')>Open Access (Publik)</option><option value="restricted" @selected(old('akses_naskah') === 'restricted')>Restricted (Hanya Civitas Akademika)</option><option value="embargo" @selected(old('akses_naskah') === 'embargo')>Embargo (Ditunda)</option>
                                 </select>
                                 <p class="mt-1.5 text-xs leading-relaxed text-stone-500">Publik dapat dibaca siapa saja. Hanya civitas akademika membatasi pembaca. Ditunda membuka naskah setelah masa tertentu.</p>
                             </div>
@@ -121,11 +155,10 @@
                                 <button class="rounded-lg bg-[#1B4D3E] px-5 py-2.5 text-xs font-semibold tracking-wide text-white shadow-sm transition hover:bg-[#143B30] active:scale-[0.99] sm:px-6 sm:text-sm" type="submit">Kirim pengajuan</button>
                             </div>
                         </div>
-                        <p id="form-message" class="mt-4 hidden rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900" role="status">Formulir ini belum terhubung ke penyimpanan pengajuan.</p>
                     </form>
                 </section>
 
-                <aside class="space-y-6 xl:sticky xl:top-24 xl:col-span-4" data-purpose="status-and-guidance-widgets">
+                <aside class="space-y-6 xl:sticky xl:top-24 xl:col-span-3" data-purpose="status-and-guidance-widgets">
                     <div class="rounded-xl border border-stone-200/90 bg-white p-6 shadow-sm">
                         <h3 class="mb-4 border-b border-stone-100 pb-2 font-academic text-lg font-bold text-stone-900">Kelengkapan berkas</h3>
                         <ul class="space-y-3.5 text-sm text-stone-700">
@@ -154,6 +187,181 @@
         const abstractField = document.getElementById('abstrak');
         const characterCounter = document.getElementById('char-counter');
         const fileIds = ['file_naskah', 'file_pengesahan', 'file_orisinalitas'];
+        const keywordInput = document.getElementById('kata-kunci-input');
+        const keywordValue = document.getElementById('kata_kunci');
+        const keywordChipList = document.getElementById('kata-kunci-chips');
+        const keywordItems = [];
+        const dosenInputIds = ['dosen_pembimbing', 'dosen_pembimbing_2'];
+        const dosenIdInputs = ['dosen_pembimbing_id', 'dosen_pembimbing_2_id']
+            .map((id) => document.getElementById(id));
+        const dosenSuggestionsUrl = @json(route('mahasiswa.dosen.suggestions'));
+
+        function renderKeywordChips() {
+            keywordChipList.replaceChildren();
+            keywordItems.forEach((keyword, index) => {
+                const chip = document.createElement('span');
+                chip.className = 'inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2.5 py-1 text-sm font-medium text-emerald-900';
+
+                const label = document.createElement('span');
+                label.textContent = keyword;
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'flex h-5 w-5 items-center justify-center rounded text-emerald-800 hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-700';
+                removeButton.setAttribute('aria-label', `Hapus kata kunci ${keyword}`);
+                removeButton.textContent = '×';
+                removeButton.addEventListener('click', () => {
+                    keywordItems.splice(index, 1);
+                    renderKeywordChips();
+                    keywordInput.focus();
+                });
+
+                chip.append(label, removeButton);
+                keywordChipList.append(chip);
+            });
+
+            keywordValue.value = keywordItems.join(', ');
+        }
+
+        function addKeywords(value) {
+            value.split(',').forEach((candidate) => {
+                const keyword = candidate.trim();
+                const alreadyAdded = keywordItems.some((item) => item.toLocaleLowerCase() === keyword.toLocaleLowerCase());
+
+                if (keyword && !alreadyAdded) keywordItems.push(keyword);
+            });
+
+            keywordInput.value = '';
+            keywordInput.setCustomValidity('');
+            renderKeywordChips();
+        }
+
+        addKeywords(@json(old('kata_kunci', '')));
+
+        keywordInput.addEventListener('input', () => keywordInput.setCustomValidity(''));
+
+        keywordInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ',') {
+                event.preventDefault();
+                addKeywords(keywordInput.value);
+            } else if (event.key === 'Backspace' && !keywordInput.value && keywordItems.length) {
+                keywordItems.pop();
+                renderKeywordChips();
+            }
+        });
+
+        function setupDosenAutocomplete(inputId, selectedId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const selectedDosenId = document.getElementById(selectedId);
+            const suggestions = document.getElementById(suggestionsId);
+            let searchTimer;
+            let searchController;
+            let activeIndex = -1;
+
+            function closeSuggestions() {
+                suggestions.classList.add('hidden');
+                input.setAttribute('aria-expanded', 'false');
+                activeIndex = -1;
+            }
+
+            function selectDosen(dosen) {
+                input.value = dosen.nama_dosen;
+                selectedDosenId.value = dosen.id_dosen;
+                input.setCustomValidity('');
+                closeSuggestions();
+            }
+
+            function renderSuggestions(results, query) {
+                suggestions.replaceChildren();
+                activeIndex = -1;
+
+                if (!results.length) {
+                    const emptyMessage = document.createElement('p');
+                    emptyMessage.className = 'px-4 py-3 text-sm text-stone-500';
+                    emptyMessage.textContent = `Tidak ada dosen yang cocok dengan "${query}".`;
+                    suggestions.append(emptyMessage);
+                } else {
+                    results.forEach((dosen) => {
+                        const option = document.createElement('button');
+                        option.type = 'button';
+                        option.setAttribute('role', 'option');
+                        option.className = 'block w-full px-4 py-3 text-left text-sm text-stone-800 hover:bg-emerald-50 focus:bg-emerald-50 focus:outline-none';
+
+                        const name = document.createElement('span');
+                        name.className = 'block font-semibold';
+                        name.textContent = dosen.nama_dosen;
+
+                        const initials = document.createElement('span');
+                        initials.className = 'mt-0.5 block text-xs text-stone-500';
+                        initials.textContent = `Inisial: ${dosen.inisial}`;
+
+                        option.append(name, initials);
+                        option.addEventListener('click', () => selectDosen(dosen));
+                        suggestions.append(option);
+                    });
+                }
+
+                suggestions.classList.remove('hidden');
+                input.setAttribute('aria-expanded', 'true');
+            }
+
+            input.addEventListener('input', () => {
+                const query = input.value.trim();
+                selectedDosenId.value = '';
+                input.setCustomValidity(query ? 'Pilih dosen dari daftar sugesti.' : '');
+                window.clearTimeout(searchTimer);
+                searchController?.abort();
+
+                if (query.length < 2) {
+                    closeSuggestions();
+                    return;
+                }
+
+                searchTimer = window.setTimeout(async () => {
+                    searchController = new AbortController();
+
+                    try {
+                        const url = new URL(dosenSuggestionsUrl, window.location.origin);
+                        url.searchParams.set('q', query);
+                        const response = await fetch(url, { signal: searchController.signal });
+
+                        if (!response.ok) throw new Error('Gagal memuat sugesti dosen.');
+
+                        renderSuggestions(await response.json(), query);
+                    } catch (error) {
+                        if (error.name !== 'AbortError') renderSuggestions([], query);
+                    }
+                }, 200);
+            });
+
+            input.addEventListener('keydown', (event) => {
+                const options = [...suggestions.querySelectorAll('[role="option"]')];
+
+                if (event.key === 'ArrowDown' && options.length) {
+                    event.preventDefault();
+                    activeIndex = (activeIndex + 1) % options.length;
+                    options[activeIndex].focus();
+                } else if (event.key === 'Enter' && options.length) {
+                    event.preventDefault();
+                    options[activeIndex < 0 ? 0 : activeIndex].click();
+                } else if (event.key === 'Escape') {
+                    closeSuggestions();
+                }
+            });
+
+            return {
+                reset() {
+                    selectedDosenId.value = '';
+                    input.setCustomValidity('');
+                    closeSuggestions();
+                },
+            };
+        }
+
+        const dosenAutocompleteControls = [
+            setupDosenAutocomplete('dosen_pembimbing', 'dosen_pembimbing_id', 'dosen-suggestions-1'),
+            setupDosenAutocomplete('dosen_pembimbing_2', 'dosen_pembimbing_2_id', 'dosen-suggestions-2'),
+        ];
 
         abstractField.addEventListener('input', () => {
             characterCounter.textContent = abstractField.value.length;
@@ -195,6 +403,10 @@
         submissionForm.addEventListener('reset', () => {
             window.setTimeout(() => {
                 characterCounter.textContent = '0';
+                keywordItems.length = 0;
+                renderKeywordChips();
+                keywordInput.setCustomValidity('');
+                dosenAutocompleteControls.forEach((control) => control.reset());
                 fileIds.forEach((id) => {
                     const statusItem = document.getElementById(`status_${id}`);
                     const fileName = document.getElementById(`${id}_name`);
@@ -205,18 +417,26 @@
                     fileName.classList.remove('text-red-700');
                 });
                 updateUploadSummary();
-                document.getElementById('form-message').classList.add('hidden');
             });
         });
 
         submissionForm.addEventListener('submit', (event) => {
-            event.preventDefault();
+            if (keywordInput.value.trim()) addKeywords(keywordInput.value);
+            keywordInput.setCustomValidity(keywordItems.length ? '' : 'Tambahkan minimal satu kata kunci.');
+            dosenInputIds.forEach((inputId, index) => {
+                const input = document.getElementById(inputId);
+                input.setCustomValidity(dosenIdInputs[index].value ? '' : `Pilih dosen pembimbing ${index + 1} dari daftar sugesti.`);
+            });
+
             const firstInvalidField = submissionForm.querySelector(':invalid');
             if (firstInvalidField) {
+                event.preventDefault();
                 firstInvalidField.reportValidity();
                 return;
             }
-            document.getElementById('form-message').classList.remove('hidden');
+            const submitButton = submissionForm.querySelector('[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Mengirim pengajuan...';
         });
     </script>
 </body>

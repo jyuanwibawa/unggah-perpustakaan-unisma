@@ -42,6 +42,8 @@
                                 <option value="perlu_revisi">Perlu revisi</option>
                                 <option value="disetujui">Disetujui</option>
                                 <option value="selesai">Selesai</option>
+                                <option value="ditolak">Ditolak</option>
+                                <option value="dibatalkan">Dibatalkan</option>
                             </select>
                         </label>
                     </div>
@@ -59,53 +61,47 @@
                             </tr>
                         </thead>
                         <tbody id="history-rows" class="divide-y divide-slate-100 text-sm">
-                            <tr class="history-row transition-colors hover:bg-slate-50/50" data-status="diproses" data-search="rancang bangun sistem informasi akademik berbasis web skripsi">
-                                <td class="whitespace-nowrap px-6 py-5 align-top font-medium text-slate-700">5 Oktober 2026</td>
-                                <td class="px-6 py-5 align-top">
-                                    <p class="font-semibold leading-snug text-slate-900">Rancang Bangun Sistem Informasi Akademik Berbasis Web</p>
-                                    <p class="mt-1 text-xs text-slate-500">Skripsi <span class="mx-1">&bull;</span> <span class="font-medium text-amber-800">revisi</span></p>
-                                </td>
-                                <td class="whitespace-nowrap px-6 py-5 align-top"><span class="inline-flex items-center rounded-full border border-amber-200/60 bg-[#fef6e7] px-3 py-1 text-xs font-medium text-[#975a16]"><span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-[#d69e2e]"></span>Diproses</span></td>
-                                <td class="px-6 py-5 align-top text-slate-400">-</td>
-                                <td class="px-6 py-5 text-right align-top"><button class="history-detail rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-[#133E31]" type="button" data-date="5 Oktober 2026" data-title="Rancang Bangun Sistem Informasi Akademik Berbasis Web" data-type="Skripsi" data-status-label="Diproses" data-note="Pengajuan sedang diperiksa petugas.">Detail</button></td>
+                            @foreach ($submissions as $submission)
+                                <tr class="history-row transition-colors hover:bg-slate-50/50" data-status="{{ $submission->status_filter }}" data-search="{{ $submission->search_text }}">
+                                    <td class="whitespace-nowrap px-6 py-5 align-top font-medium text-slate-700">{{ $submission->tanggal_label }}</td>
+                                    <td class="px-6 py-5 align-top">
+                                        <p class="font-semibold leading-snug text-slate-900">{{ $submission->judul_karya }}</p>
+                                        <p class="mt-1 text-xs text-slate-500">{{ $submission->jenis_karya_label }} <span class="mx-1">&bull;</span> {{ $submission->nomor_pengajuan }}</p>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-5 align-top">
+                                        <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium {{ $submission->status_badge_class }}">
+                                            <span class="mr-1.5 h-1.5 w-1.5 rounded-full {{ $submission->status_dot_class }}"></span>{{ $submission->status_label }}
+                                        </span>
+                                    </td>
+                                    <td class="max-w-xs px-6 py-5 align-top text-xs leading-relaxed text-slate-600">{{ $submission->catatan_label }}</td>
+                                    <td class="px-6 py-5 text-right align-top">
+                                        <button
+                                            class="history-detail rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-[#133E31]"
+                                            type="button"
+                                            data-date="{{ $submission->tanggal_label }}"
+                                            data-number="{{ $submission->nomor_pengajuan }}"
+                                            data-title="{{ $submission->judul_karya }}"
+                                            data-type="{{ $submission->jenis_karya_label }}"
+                                            data-status-label="{{ $submission->status_label }}"
+                                            data-note="{{ $submission->catatan_label }}"
+                                            data-keywords="{{ $submission->kata_kunci }}"
+                                            data-abstract="{{ $submission->abstrak }}"
+                                            data-advisor-one="{{ $submission->nama_pembimbing_1 ?? '-' }}"
+                                            data-advisor-two="{{ $submission->nama_pembimbing_2 ?? '-' }}"
+                                            data-documents="{{ $submission->documents->map(fn ($document) => ['label' => $document->label, 'url' => $document->download_url])->toJson(JSON_UNESCAPED_SLASHES) }}"
+                                        >Detail</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            <tr id="history-empty" class="{{ $submissions->isEmpty() ? '' : 'hidden' }}">
+                                <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="5">{{ $submissions->isEmpty() ? 'Belum ada pengajuan.' : 'Tidak ada pengajuan yang sesuai dengan pencarian.' }}</td>
                             </tr>
-                            <tr class="history-row bg-rose-50/20 transition-colors hover:bg-slate-50/50" data-status="perlu_revisi" data-search="rancang bangun sistem informasi akademik berbasis web skripsi">
-                                <td class="whitespace-nowrap px-6 py-5 align-top font-medium text-slate-700">30 September 2026</td>
-                                <td class="px-6 py-5 align-top">
-                                    <p class="font-semibold leading-snug text-slate-900">Rancang Bangun Sistem Informasi Akademik Berbasis Web</p>
-                                    <p class="mt-1 text-xs text-slate-500">Skripsi</p>
-                                </td>
-                                <td class="whitespace-nowrap px-6 py-5 align-top"><span class="inline-flex items-center rounded-full border border-rose-200/60 bg-[#fdf2f2] px-3 py-1 text-xs font-medium text-[#9b1c1c]"><span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-[#e02424]"></span>Perlu revisi</span></td>
-                                <td class="px-6 py-5 align-top text-xs leading-relaxed text-slate-700">Lembar pengesahan belum ditandatangani penguji. Unggah ulang berkas yang sudah lengkap.</td>
-                                <td class="px-6 py-5 text-right align-top">
-                                    <div class="flex flex-col items-end space-y-2">
-                                        <button class="history-detail rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-[#133E31]" type="button" data-date="30 September 2026" data-title="Rancang Bangun Sistem Informasi Akademik Berbasis Web" data-type="Skripsi" data-status-label="Perlu revisi" data-note="Lembar pengesahan belum ditandatangani penguji. Unggah ulang berkas yang sudah lengkap.">Detail</button>
-                                        <a href="{{ url('/mahasiswa/ajukan') }}" class="rounded-lg border border-red-300 px-3.5 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-700 hover:text-white">Perbaiki pengajuan</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="history-row transition-colors hover:bg-slate-50/50" data-status="disetujui" data-search="analisis sentimen opini publik twitter algoritma naive bayes proposal skripsi">
-                                <td class="whitespace-nowrap px-6 py-5 align-top font-medium text-slate-700">12 Agustus 2026</td>
-                                <td class="px-6 py-5 align-top">
-                                    <p class="font-semibold leading-snug text-slate-900">Analisis Sentimen Opini Publik pada Twitter Menggunakan Algoritma Naive Bayes</p>
-                                    <p class="mt-1 text-xs text-slate-500">Proposal Skripsi</p>
-                                </td>
-                                <td class="whitespace-nowrap px-6 py-5 align-top"><span class="inline-flex items-center rounded-full border border-emerald-200/60 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800"><span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Disetujui</span></td>
-                                <td class="px-6 py-5 align-top text-xs leading-relaxed text-slate-600">Berkas lengkap dan telah disetujui pustakawan.</td>
-                                <td class="px-6 py-5 text-right align-top"><button class="history-detail rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-[#133E31]" type="button" data-date="12 Agustus 2026" data-title="Analisis Sentimen Opini Publik pada Twitter Menggunakan Algoritma Naive Bayes" data-type="Proposal Skripsi" data-status-label="Disetujui" data-note="Berkas lengkap dan telah disetujui pustakawan.">Detail</button></td>
-                            </tr>
-                            <tr id="history-empty" class="hidden"><td class="px-6 py-12 text-center text-sm text-slate-500" colspan="5">Tidak ada pengajuan yang sesuai dengan pencarian.</td></tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-5 py-4 text-xs text-slate-500 sm:px-6">
-                    <span id="history-count" role="status">Menampilkan 3 dari 3 pengajuan</span>
-                    <div class="flex items-center space-x-1" aria-label="Halaman riwayat">
-                        <button class="cursor-not-allowed rounded border border-slate-200 bg-white px-2.5 py-1 text-slate-400" type="button" disabled aria-label="Halaman sebelumnya">&lsaquo;</button>
-                        <span class="rounded bg-[#1b4d3e] px-3 py-1 font-medium text-white" aria-current="page">1</span>
-                        <button class="cursor-not-allowed rounded border border-slate-200 bg-white px-2.5 py-1 text-slate-400" type="button" disabled aria-label="Halaman berikutnya">&rsaquo;</button>
-                    </div>
+                    <span id="history-count" role="status">Menampilkan {{ $submissions->count() }} dari {{ $submissions->count() }} pengajuan</span>
                 </div>
             </section>
         </main>
@@ -121,9 +117,15 @@
         </div>
         <dl class="grid grid-cols-[auto_1fr] gap-x-5 gap-y-4 p-5 text-sm sm:p-6">
             <dt class="text-slate-500">Tanggal</dt><dd id="detail-date" class="font-medium text-slate-800"></dd>
+            <dt class="text-slate-500">Nomor pengajuan</dt><dd id="detail-number" class="font-medium text-slate-800"></dd>
             <dt class="text-slate-500">Jenis karya</dt><dd id="detail-type" class="font-medium text-slate-800"></dd>
             <dt class="text-slate-500">Status</dt><dd id="detail-status" class="font-semibold text-slate-800"></dd>
+            <dt class="text-slate-500">Pembimbing 1</dt><dd id="detail-advisor-one" class="font-medium text-slate-800"></dd>
+            <dt class="text-slate-500">Pembimbing 2</dt><dd id="detail-advisor-two" class="font-medium text-slate-800"></dd>
+            <dt class="text-slate-500">Kata kunci</dt><dd id="detail-keywords" class="font-medium text-slate-800"></dd>
+            <dt class="text-slate-500">Abstrak</dt><dd id="detail-abstract" class="leading-relaxed text-slate-700"></dd>
             <dt class="text-slate-500">Catatan</dt><dd id="detail-note" class="leading-relaxed text-slate-700"></dd>
+            <dt class="text-slate-500">Berkas</dt><dd id="detail-documents" class="leading-relaxed text-slate-700"><ul id="detail-document-list" class="space-y-2"></ul></dd>
         </dl>
     </dialog>
 
@@ -134,6 +136,7 @@
         const historyEmpty = document.getElementById('history-empty');
         const historyCount = document.getElementById('history-count');
         const detailDialog = document.getElementById('history-detail-dialog');
+        const historyEmptyMessage = historyEmpty.querySelector('td');
 
         function filterHistory() {
             const searchTerm = searchInput.value.trim().toLocaleLowerCase('id');
@@ -149,19 +152,41 @@
             });
 
             historyEmpty.classList.toggle('hidden', visibleCount > 0);
+            historyEmptyMessage.textContent = historyRows.length
+                ? 'Tidak ada pengajuan yang sesuai dengan pencarian.'
+                : 'Belum ada pengajuan.';
             historyCount.textContent = `Menampilkan ${visibleCount} dari ${historyRows.length} pengajuan`;
         }
 
         searchInput.addEventListener('input', filterHistory);
         statusFilter.addEventListener('change', filterHistory);
+        filterHistory();
 
         document.querySelectorAll('.history-detail').forEach((button) => {
             button.addEventListener('click', () => {
                 document.getElementById('detail-title').textContent = button.dataset.title;
                 document.getElementById('detail-date').textContent = button.dataset.date;
+                document.getElementById('detail-number').textContent = button.dataset.number;
                 document.getElementById('detail-type').textContent = button.dataset.type;
                 document.getElementById('detail-status').textContent = button.dataset.statusLabel;
                 document.getElementById('detail-note').textContent = button.dataset.note;
+                document.getElementById('detail-advisor-one').textContent = button.dataset.advisorOne;
+                document.getElementById('detail-advisor-two').textContent = button.dataset.advisorTwo;
+                document.getElementById('detail-keywords').textContent = button.dataset.keywords || '-';
+                document.getElementById('detail-abstract').textContent = button.dataset.abstract;
+
+                const documentList = document.getElementById('detail-document-list');
+                documentList.replaceChildren();
+                JSON.parse(button.dataset.documents).forEach((file) => {
+                    const item = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.className = 'font-semibold text-emerald-800 underline hover:text-emerald-950';
+                    link.href = file.url;
+                    link.textContent = file.label;
+                    item.append(link);
+                    documentList.append(item);
+                });
+
                 detailDialog.showModal();
             });
         });
