@@ -3,6 +3,7 @@
 use App\Http\Controllers\MahasiswaLoginController;
 use App\Http\Controllers\MahasiswaPengajuanController;
 use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\StaffGuideController;
 use App\Http\Controllers\StaffVerificationController;
 use App\Http\Middleware\AuthenticateMahasiswa;
 use Illuminate\Http\Request;
@@ -26,6 +27,11 @@ Route::get('/staff/dashboard', StaffDashboardController::class)->name('staff.das
 Route::get('/staff/verifikasi', [StaffVerificationController::class, 'index'])->name('staff.verifikasi.index');
 Route::post('/staff/verifikasi/{submissionId}', [StaffVerificationController::class, 'update'])->name('staff.verifikasi.update');
 Route::get('/staff/verifikasi/dokumen/{documentId}', [StaffVerificationController::class, 'downloadDocument'])->name('staff.verifikasi.document');
+Route::get('/staff/panduan', [StaffGuideController::class, 'index'])->name('staff.panduan.index');
+Route::put('/staff/panduan/alur/{stageId}', [StaffGuideController::class, 'updateStage'])->name('staff.panduan.stage.update');
+Route::post('/staff/panduan/faq', [StaffGuideController::class, 'storeQuestion'])->name('staff.panduan.faq.store');
+Route::put('/staff/panduan/faq/{questionId}', [StaffGuideController::class, 'updateQuestion'])->name('staff.panduan.faq.update');
+Route::delete('/staff/panduan/faq/{questionId}', [StaffGuideController::class, 'destroyQuestion'])->name('staff.panduan.faq.destroy');
 
 Route::get('/beranda', [MahasiswaPengajuanController::class, 'dashboard'])
     ->middleware(AuthenticateMahasiswa::class);
@@ -80,4 +86,4 @@ Route::get('/mahasiswa/panduan', function () {
         ->get();
 
     return view('mahasiswa.panduan', compact('alurPengajuan', 'pertanyaanUmum'));
-});
+})->name('mahasiswa.panduan');
