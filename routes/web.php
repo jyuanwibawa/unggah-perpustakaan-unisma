@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\MahasiswaLoginController;
 use App\Http\Controllers\MahasiswaPengajuanController;
+use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\StaffVerificationController;
 use App\Http\Middleware\AuthenticateMahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,11 @@ Route::get('/staff-login', function () {
 Route::get('/staff/login', function () {
     return view('auth.staff-login');
 });
+
+Route::get('/staff/dashboard', StaffDashboardController::class)->name('staff.dashboard');
+Route::get('/staff/verifikasi', [StaffVerificationController::class, 'index'])->name('staff.verifikasi.index');
+Route::post('/staff/verifikasi/{submissionId}', [StaffVerificationController::class, 'update'])->name('staff.verifikasi.update');
+Route::get('/staff/verifikasi/dokumen/{documentId}', [StaffVerificationController::class, 'downloadDocument'])->name('staff.verifikasi.document');
 
 Route::get('/beranda', [MahasiswaPengajuanController::class, 'dashboard'])
     ->middleware(AuthenticateMahasiswa::class);
